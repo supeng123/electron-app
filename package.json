@@ -1,0 +1,16 @@
+{
+  "name": "electron-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "electron": "^5.0.6",
+    "fluent-ffmpeg": "^2.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "electron": "electron ."
+  },
+  "author": "",
+  "license": "ISC"
+}
