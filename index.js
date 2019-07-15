@@ -1,42 +1,26 @@
 const electron = require('electron');
 const path = require('path');
 
-const { app, BrowserWindow, Tray} = electron;
+const { app, ipcMain} = electron;
+
+const TimerTray = require('./app/timer_tray');
+const MainWindow = require('./app/main_window');
 
 let mainWindow;
 let tray;
 
 app.on('ready', () => {
-    mainWindow = new BrowserWindow({
-        webPreferences: {
-            nodeIntegration: true
-        },
-        height: 500,
-        width: 300,
-        frame: false,
-        resizable: false,
-        show: false
-    });
-    mainWindow.loadURL(`file://${__dirname}/src/index.html`);
+    if (process.platform === 'darwin') app.dock.hide();
+    mainWindow = new MainWindow(`file://${__dirname}/src/index.html`);
 
     const iconName = process.platform === 'win32' ? 'windows-icon.png' : 'iconTemplate.png';
     const iconPath = path.join(__dirname, `./src/assets/${iconName}`)
-    tray = new Tray(iconPath);
 
-    tray.on('click', (event, bounds) => {
-        const {x,y} = bounds;
-        const {height, width} = mainWindow.getBounds();
+    tray = new TimerTray(iconPath, mainWindow);
 
-        if (mainWindow.isVisible()) {
-            mainWindow.hide();
-        } else {
-            // mainWindow.setBounds({
-            //     x: x - width/2,
-            //     y: process.platform === 'darwin' ? y : y - height,
-            //     height,
-            //     width
-            // });
-            mainWindow.show();
-        }
-    });
+});
+
+
+ipcMain.on('update-timer', (event, timeLeft) => {
+    tray.setTitle(timeLeft);
 });
